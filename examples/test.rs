@@ -1,26 +1,24 @@
-use std::{future::ready, task::Poll};
-
-use nerves_for_jenn::{NerveExecutor, al, new_nerves};
+use nerves_for_jenn::{NerveContext, NerveExecutor, new_nerves};
 
 struct Test {
   stop: bool,
 }
 
 impl Test {
-  pub fn exe_start(&mut self) {
+  pub fn exe_start(&mut self, context: &mut NerveContext<Self>) {
     println!("start");
-    al::set_nerve(self, &NrvCounting);
+    context.set_nerve(&NrvCounting);
   }
 
-  pub fn exe_counting(&mut self) {
-    if al::get_step(self) >= 5 {
-      al::set_nerve(self, &NrvStop);
+  pub fn exe_counting(&mut self, context: &mut NerveContext<Self>) {
+    if context.step() >= 5 {
+      context.set_nerve( &NrvStop);
     } else {
-      println!("counting (step: {})", al::get_step(self) + 1)
+      println!("counting (step: {})", context.step() + 1)
     }
   }
 
-  pub fn exe_stop(&mut self) {
+  pub fn exe_stop(&mut self, _context: &mut NerveContext<Self>) {
     println!("done");
     self.stop = true;
   }
